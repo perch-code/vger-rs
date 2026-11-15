@@ -249,7 +249,13 @@ impl Vger {
                     format: texture_format,
                     blend: Some(wgpu::BlendState {
                         color: blend_comp,
-                        alpha: blend_comp,
+                        // Coverage adds up as it does in "over", so paint
+                        // over an opaque frame leaves it opaque.
+                        alpha: wgpu::BlendComponent {
+                            operation: wgpu::BlendOperation::Add,
+                            src_factor: wgpu::BlendFactor::One,
+                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                        },
                     }),
                     write_mask: wgpu::ColorWrites::ALL,
                 })],
